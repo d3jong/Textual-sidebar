@@ -11,6 +11,10 @@ python = "^3.12"
 textual = "^0.77.0"
 
 
+[tool.poetry.group.dev.dependencies]
+textual = "^0.77.0"
+textual-dev = "^1.5.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

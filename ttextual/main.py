@@ -2,6 +2,7 @@ from textual.app import App, ComposeResult
 from textual.containers import Vertical, Horizontal
 from textual.widgets import Button, Header, Footer, Static, Label
 from textual.reactive import reactive
+from textual import log
 
 class SidebarButton(Button):
     def __init__(self, label: str, view_name: str) -> None:
@@ -60,6 +61,11 @@ class MyApp(App):
         first_button = self.query("#sidebar Button").first()
         if first_button:
             first_button.press()
+
+        log("Hello, World")  # simple string
+        log(locals())  # Log local variables
+        log(children=self.children, pi=3.141592)  # key/values
+        log(self.tree)  # Rich renderables
 
     def on_button_pressed(self, event: SidebarButton.Pressed) -> None:
         if event.button.view_name == "home":
