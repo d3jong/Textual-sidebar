@@ -49,14 +49,13 @@ class MyApp(App):
     }
 
     #sidebar {
-        # width: 25%;
+        width: auto;
         background: #333;
         color: white;
         padding: 1;
     }
 
     #main {
-        background: blue;
         padding: 1;
         height: 1fr;
     }
@@ -72,7 +71,7 @@ class MyApp(App):
     }
 
     Button:hover {
-        background: #666;
+        background: orange;
     }
     """
 
