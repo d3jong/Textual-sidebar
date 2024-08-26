@@ -1,6 +1,6 @@
 from textual.app import App, ComposeResult
 from textual.containers import Vertical, Horizontal
-from textual.widgets import Button, Header, Footer, Static
+from textual.widgets import Button, Header, Footer, Static, Label
 from textual.reactive import reactive
 
 class SidebarButton(Button):
@@ -17,6 +17,28 @@ class MainView(Static):
     def render(self) -> str:
         return self.content
 
+class SettingsView(Vertical):
+    def __init__(self, id: str) -> None:
+        super().__init__(id=id)
+        self._label = Label("Settings:")
+        self._update_button = Button("Update Settings")
+        self._change_label_button = Button("Change Label")
+        
+        # Add widgets to the view
+        self.mount(self._label)
+        self.mount(self._update_button)
+        self.mount(self._change_label_button)
+
+        # Bind events to buttons
+        self._update_button.on_click(self.on_update_button_click)
+        self._change_label_button.on_click(self.on_change_label_button)
+
+    def on_update_button_click(self) -> None:
+        self._label.update("Settings Updated!")
+
+    def on_change_label_button_click(self) -> None:
+        self._label.update("Updated Settings Label")
+
 class MyApp(App):
     def compose(self) -> ComposeResult:
         yield Header()
@@ -26,22 +48,34 @@ class MyApp(App):
                 yield SidebarButton("Home", "home")
                 yield SidebarButton("Settings", "settings")
                 yield SidebarButton("About", "about")
+            # Main container initialized
             with Vertical(id="main"):
-                yield MainView(id="main_view")
+                self._main_container = Vertical(id="main_container")
+                yield self._main_container
 
     def on_mount(self) -> None:
+        # Initialize main view
+        self._main_content = MainView(id="main_view")
+        self._main_container.mount(self._main_content)
+        # Set initial button pressed state
         first_button = self.query("#sidebar Button").first()
         if first_button:
             first_button.press()
 
     def on_button_pressed(self, event: SidebarButton.Pressed) -> None:
-        main_view = self.query_one("#main_view", MainView)
         if event.button.view_name == "home":
-            main_view.update_content("Welcome to the Home view!")
+            self._update_main_view(MainView(id="main_view", content="Welcome to the Home view!"))
         elif event.button.view_name == "settings":
-            main_view.update_content("This is the Settings view.")
+            self._update_main_view(SettingsView(id="settings_view"))
         elif event.button.view_name == "about":
-            main_view.update_content("About this application.")
+            self._update_main_view(MainView(id="main_view", content="About this application."))
+
+    def _update_main_view(self, new_view):
+        # Clear existing content
+        if self._main_container.children:
+            self._main_container.remove(self._main_container.children[0])
+        # Mount new view
+        self._main_container.mount(new_view)
 
     CSS = """
     Horizontal {
