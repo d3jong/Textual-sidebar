@@ -48,7 +48,6 @@ class MyApp(App):
                 yield SidebarButton("Home", "home")
                 yield SidebarButton("Settings", "settings")
                 yield SidebarButton("About", "about")
-            # Main container initialized
             with Vertical(id="main"):
                 self._main_container = Vertical(id="main_container")
                 yield self._main_container
@@ -64,16 +63,19 @@ class MyApp(App):
 
     def on_button_pressed(self, event: SidebarButton.Pressed) -> None:
         if event.button.view_name == "home":
-            self._update_main_view(MainView(id="main_view", content="Welcome to the Home view!"))
+            self._update_main_view(MainView(id="main_view"))
+            self.query_one("#main_view", MainView).update_content("Welcome to the Home view!")
         elif event.button.view_name == "settings":
             self._update_main_view(SettingsView(id="settings_view"))
         elif event.button.view_name == "about":
-            self._update_main_view(MainView(id="main_view", content="About this application."))
+            self._update_main_view(MainView(id="main_view"))
+            self.query_one("#main_view", MainView).update_content("About this application.")
 
     def _update_main_view(self, new_view):
-        # Clear existing content
-        if self._main_container.children:
-            self._main_container.remove(self._main_container.children[0])
+        # Clear existing content by removing all widgets
+        # for widget in list(self._main_container.children):
+        #     print(widget)
+        self._main_container.remove_children(list(self._main_container.children))
         # Mount new view
         self._main_container.mount(new_view)
 
